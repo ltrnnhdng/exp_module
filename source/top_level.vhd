@@ -89,7 +89,7 @@ architecture Behavior of datapath is
     constant one_1bit : std_logic := '1';
     type lut_array is array (0 to 15) of std_logic_vector(15 downto 0);
 
-    -- LUT declaration
+    -- LUT declaration need to change this
     constant LUT : lut_array := (
         0  => x"0001",
         1  => x"0002",
@@ -171,3 +171,4 @@ out_ff: entity work.flipflop
 
     
 end architecture Behavior;
+
