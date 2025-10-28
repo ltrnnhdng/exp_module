@@ -1,8 +1,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;  -- dùng cho phép toán s? h?c
+use ieee.numeric_std.all;  -- dÃ¹ng cho phÃ©p toÃ¡n s? h?c
 
--- Khai báo entity (giao ti?p)
+-- Khai bÃ¡o entity (giao ti?p)
 entity datapath is
     port (
        rst, clk: in std_logic;
@@ -25,7 +25,7 @@ entity datapath is
     );
 end entity datapath;
 
--- Ki?n trúc bên trong (mô t? ho?t ??ng)
+-- Ki?n trÃºc bÃªn trong (mÃ´ t? ho?t ??ng)
 architecture Behavior of datapath is
 
     -- component declearations 
