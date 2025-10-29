@@ -1,8 +1,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;  -- dÃ¹ng cho phÃ©p toÃ¡n s? h?c
+use ieee.numeric_std.all;  -- dùng cho phép toán s? h?c
 
--- Khai bÃ¡o entity (giao ti?p)
+-- Khai báo entity (giao ti?p)
 entity datapath is
     port (
        rst, clk: in std_logic;
@@ -25,7 +25,7 @@ entity datapath is
     );
 end entity datapath;
 
--- Ki?n trÃºc bÃªn trong (mÃ´ t? ho?t ??ng)
+-- Ki?n trúc bên trong (mô t? ho?t ??ng)
 architecture Behavior of datapath is
 
     -- component declearations 
@@ -42,7 +42,7 @@ architecture Behavior of datapath is
     
     component addsub 
         port(
-            clk, rst, op_sel :in std_logic;
+            op_sel :in std_logic;
             a,b : in std_logic_vector (15 downto 0);
             c : out std_logic_vector (15 downto 0)
         );
@@ -87,42 +87,45 @@ architecture Behavior of datapath is
     
     constant one : std_logic_vector (15 downto 0) := x"0001";
     constant one_1bit : std_logic := '1';
-    type lut_array is array (0 to 15) of std_logic_vector(15 downto 0);
-
-    -- LUT declaration need to change this
-    constant LUT : lut_array := (
-        0  => x"0001",
-        1  => x"0002",
-        2  => x"0004",
-        3  => x"0008",
-        4  => x"0010",
-        5  => x"0020",
-        6  => x"0040",
-        7  => x"0080",
-        8  => x"0100",
-        9  => x"0200",
-        10 => x"0400",
-        11 => x"0800",
-        12 => x"1000",
-        13 => x"2000",
-        14 => x"4000",
-        15 => x"8000"
-     );
-
     
-begin
+
+    -- =============================================================
+    --  LUT (atanh(2^-i)) d?ng Q1.14 fixed-point
+    -- =============================================================
+    type lut_array is array (0 to 15) of std_logic_vector(15 downto 0);
+    constant LUT : lut_array := (
+        0  => x"2328", -- i= 1: 0.5493061443 -> 0b0010001100101000 -> 0x2328
+        1  => x"1059", -- i= 2: 0.2554128119 -> 0b0001000001011001 -> 0x1059
+        2  => x"080B", -- i= 3: 0.1256572141 -> 0b0000100000001011 -> 0x080B
+        3  => x"0401", -- i= 4: 0.0625815715 -> 0b0000010000000001 -> 0x0401
+        4  => x"0200", -- i= 5: 0.0312601785 -> 0b0000001000000000 -> 0x0200
+        5  => x"0100", -- i= 6: 0.0156262718 -> 0b0000000100000000 -> 0x0100
+        6  => x"0080", -- i= 7: 0.0078126590 -> 0b0000000010000000 -> 0x0080
+        7  => x"0040", -- i= 8: 0.0039062699 -> 0b0000000001000000 -> 0x0040
+        8  => x"0020", -- i= 9: 0.0019531275 -> 0b0000000000100000 -> 0x0020
+        9  => x"0010", -- i=10: 0.0009765628 -> 0b0000000000010000 -> 0x0010
+        10 => x"0008", -- i=11: 0.0004882813 -> 0b0000000000001000 -> 0x0008
+        11 => x"0004", -- i=12: 0.0002441406 -> 0b0000000000000100 -> 0x0004
+        12 => x"0002", -- i=13: 0.0001220703 -> 0b0000000000000010 -> 0x0002
+        13 => x"0001", -- i=14: 0.0000610352 -> 0b0000000000000001 -> 0x0001
+        14 => x"0001"  -- i=15: 0.0000305176 -> 0b0000000000000001 -> 0x0001
+    );
+    -- =============================================================
+
+
+BEGIN 
 
 i_ff : entity work.flipflop  
     generic map (reset_value => x"0001") 
     port map (clk => clk, rst => rst, ena => i_ld, d => i_after_add, q => i_sig);
-i_add_1: addsub port map (clk => clk, rst => rst, op_sel => one_1bit, a => i_sig, b=>one, c => i_after_add);
+i_add_1: addsub port map (op_sel => one_1bit, a => i_sig, b=>one, c => i_after_add);
 i_comp: comparator port map (clk => clk, rst => rst, a => i_sig, e_16_flag => i_gt_N);
 
 
 
 -- x,y,z ffs
 x_ff : entity work.flipflop  
-    generic map (reset_value => "0100110100100001")  --         = (1/K) = 1.2051363583
+    generic map (reset_value => x"4D21")  --        1/k = 1.2051363583 -> 0b0100110100100001 -> 0x4D21
     port map (clk => clk, rst => rst, ena => x_ld, d => x_next, q => x_sig);
     
 
@@ -136,19 +139,19 @@ z_ff : entity work.flipflop
 
 -- shifters
 x_shift : entity work.bitshift
-    port map (clk => clk, rst => rst, data => y_sig, shift_i => i_sig, data_out => y_after_shift);
+    port map (data => y_sig, shift_i => i_sig, data_out => y_after_shift);
     
 y_shift : entity work.bitshift
-    port map (clk => clk, rst => rst, data => x_sig ,shift_i => i_sig, data_out => x_after_shift);
+    port map (data => x_sig ,shift_i => i_sig, data_out => x_after_shift);
     
     
     
 -- adder / subtrators
 x_addsub : entity work.addsub
-    port map(clk => clk, rst => rst, op_sel => xy_op_sel, a => x_sig, b => y_after_shift, c => x_next);
+    port map(op_sel => xy_op_sel, a => x_sig, b => y_after_shift, c => x_next);
     
 y_addsub : entity work.addsub
-    port map(clk => clk, rst => rst, op_sel => xy_op_sel, a => y_sig, b => x_after_shift, c => y_next);
+    port map(op_sel => xy_op_sel, a => y_sig, b => x_after_shift, c => y_next);
 
 
 
@@ -157,18 +160,17 @@ z_comp: comparator port map (clk => clk, rst => rst, a => z_sig, z_flag => z_ge_
 
 lut_out <= LUT(to_integer(unsigned(i_sig(3 downto 0))));
 z_addsub:entity work.addsub
-    port map(clk => clk, rst => rst, op_sel => z_op_sel, a => z_sig, b => lut_out, c => z_after_add);
+    port map(op_sel => z_op_sel, a => z_sig, b => lut_out, c => z_after_add);
     
 z_mux: mux port map (sel => z_sel, a => in_val, b => z_after_add, c => z_next);
 
 
 -- data out
 out_addsub : entity work.addsub
-    port map(clk => clk, rst => rst, op_sel => one_1bit, a => x_sig, b => y_sig, c => out_adder_sig);
+    port map(op_sel => one_1bit, a => x_sig, b => y_sig, c => out_adder_sig);
 out_ff: entity work.flipflop  
     generic map (reset_value => x"0000")
     port map (clk => clk, rst => rst, ena => out_ld, d => out_adder_sig, q => out_data);
 
     
 end architecture Behavior;
-
