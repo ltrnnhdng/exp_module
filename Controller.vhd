@@ -60,7 +60,7 @@ begin
                      "1000" when S8,
                      "1001" when S9,
                      "1010" when S10,
-                     "1011" when S11
+                     "1011" when S11;
     -- Thanh ghi trạng thái
     process(clk, reset)
     begin
@@ -168,4 +168,5 @@ begin
 
 end architecture fsm;
 s
+
 
