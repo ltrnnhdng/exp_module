@@ -13,12 +13,12 @@ end flipflop;
 architecture behavioral of flipflop is
 signal q_reg:  std_logic_vector(15 downto 0);
 begin
-    process (clk,  rst)
+    process(clk)
     begin
-        if rst = '1' then
-            q_reg <= reset_value;
-        elsif rising_edge(clk) then
-            if ena = '1' then   
+        if rising_edge(clk) then
+            if rst = '1' then
+                q_reg <= reset_value;
+            elsif ena = '1' then
                 q_reg <= d;
             end if;
         end if;

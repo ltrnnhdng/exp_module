@@ -17,6 +17,6 @@ constant N : std_logic_vector (15 downto 0) := x"0010"; -- 16
 
 begin
     e_16_flag <= '1' when (a = N) else '0';
-    z_flag <= a(15);
+    z_flag <= not a(15);
 end behavioral;
 
