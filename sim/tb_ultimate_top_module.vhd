@@ -70,21 +70,18 @@ begin
         wait for 20 ns;
 
         -- Giai ?o?n 2: n?p d? li?u ??u vào
-        data_in_tb <= x"1111";  -- ví d?: input = 10
+        data_in_tb <= x"1001";  -- ví d?: input = 10
         wait for 10 ns;
-
-        -- Giai ?o?n 3: phát xung start
         start_tb <= '1';
-        
-        wait for 1000 ns;  -- ch? quá trình x? lý
+        wait for 700 ns;  -- ch? quá trình x? lý
 
         -- Giai ?o?n 4: ??i d? li?u, ch?y l?i
-        data_in_tb <= x"0005";
-        wait for 20 ns;
-        start_tb <= '1';
-        wait for 10 ns;
         start_tb <= '0';
-        wait for 1000 ns;
+        wait for 20 ns;
+        data_in_tb <= x"0005";
+        start_tb <= '1';
+        wait for 700 ns;
+        
 
         -- K?t thúc mô ph?ng
         wait;
