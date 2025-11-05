@@ -30,7 +30,7 @@ architecture Behavioral of addsub is
     end component;
     
     -- signal declaration
-    signal c_reg, add_res, sub_res: std_logic_vector (15 downto 0);
+    signal add_res, sub_res: std_logic_vector (15 downto 0);
     
     -- start here
     BEGIN

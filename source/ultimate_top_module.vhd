@@ -10,7 +10,10 @@ entity ultimate_top_module is
     data_in   : in  std_logic_vector(15 downto 0);
     
     done      : out std_logic;
-    out_data  : out std_logic_vector(15 downto 0)
+    out_data  : out std_logic_vector(15 downto 0);
+    
+    -- debug
+    x_out, y_out, z_out, i_out  : out std_logic_vector(15 downto 0)
   );
 end ultimate_top_module;
 
@@ -20,7 +23,7 @@ architecture Behavioral of ultimate_top_module is
   component exp_controller is
     port (
         clk       : in  std_logic;
-        reset     : in  std_logic;
+        reset_cpu     : in  std_logic;
         start     : in  std_logic;
         z_ge_0    : in  std_logic;
         i_gt_N    : in  std_logic;
@@ -37,7 +40,8 @@ architecture Behavioral of ultimate_top_module is
         done      : out std_logic;
 
         -- debug FSM
-        state_reg : out std_logic_vector(3 downto 0)
+        state_reg : out std_logic_vector(3 downto 0);
+        reset_ctrl  : out std_logic
     );
   end component;
 
@@ -52,7 +56,9 @@ architecture Behavioral of ultimate_top_module is
        i_gt_N, z_ge_0:                  out std_logic;  -- flags
        
        in_val  : in  std_logic_vector(15 downto 0);     -- input data
-       out_data: out std_logic_vector(15 downto 0)      -- output data
+       out_data: out std_logic_vector(15 downto 0);      -- output data
+       -- debug-------------------
+       x_out, y_out, z_out, i_out: out std_logic_vector(15 downto 0)
     );
   end component;
 
@@ -62,6 +68,9 @@ architecture Behavioral of ultimate_top_module is
   signal xy_op_sel_top, z_op_sel_top, z_sel_top : std_logic;
   signal done_top : std_logic;
   signal state_debug : std_logic_vector(3 downto 0);
+  signal reset_controller: std_logic;
+  -- debug ---------------
+  signal x_out1, y_out1, z_out1, i_out1: std_logic_vector(15 downto 0);
 
 begin
 
@@ -69,7 +78,7 @@ begin
   data_path_module : datapath
     port map(
       clk        => clk,
-      rst        => rst,
+      rst        => reset_controller,
 
       i_ld       => i_ld_top,
       x_ld       => x_ld_top,
@@ -85,14 +94,20 @@ begin
       z_ge_0     => z_ge_0_top,
 
       in_val     => data_in,
-      out_data   => out_data
+      out_data   => out_data,
+      
+      -- debug-----------\
+      x_out => x_out1,
+      y_out => y_out1,
+      z_out => z_out1,
+      i_out => i_out1
     );
 
   --=== CONTROLLER INSTANCE ===--
   controller_module : exp_controller
     port map(
       clk       => clk,
-      reset     => rst,
+      reset_cpu     => rst,
       start     => start,
       z_ge_0    => z_ge_0_top,
       i_gt_N    => i_gt_N_top,
@@ -108,10 +123,16 @@ begin
       z_sel     => z_sel_top,
 
       done      => done_top,
-      state_reg => state_debug
+      state_reg => state_debug,
+      reset_ctrl=> reset_controller
     );
 
   --=== OUTPUT CONNECTIONS ===--
   done <= done_top;
 
+-- debug
+x_out <= x_out1;
+y_out <= y_out1;
+z_out <= z_out1;
+i_out <= i_out1;
 end Behavioral;

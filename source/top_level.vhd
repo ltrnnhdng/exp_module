@@ -21,7 +21,10 @@ entity datapath is
        i_gt_N, z_ge_0: out std_logic;
        
        -- data out
-       out_data: out std_logic_vector(15 downto 0)
+       out_data: out std_logic_vector(15 downto 0);
+       
+       -- debug-------------------
+       x_out, y_out, z_out, i_out: out std_logic_vector(15 downto 0)
        
     );
 end entity datapath;
@@ -96,7 +99,7 @@ architecture Behavior of datapath is
     -- =============================================================
     type lut_array is array (0 to 15) of std_logic_vector(15 downto 0);
     constant LUT : lut_array := (
-        0  => x"0000", -- this number means nothing, just to fill up the array!
+        0  => x"FFFF", -- this number means nothing, just to fill up the array!
         1  => x"2328", -- i= 1: 0.5493061443 -> 0b0010001100101000 -> 0x2328
         2  => x"1059", -- i= 2: 0.2554128119 -> 0b0001000001011001 -> 0x1059
         3  => x"080B", -- i= 3: 0.1256572141 -> 0b0000100000001011 -> 0x080B
@@ -174,5 +177,9 @@ out_ff: entity work.flipflop
     generic map (reset_value => x"0000")
     port map (clk => clk, rst => rst, ena => out_ld, d => out_adder_sig, q => out_data);
 
-    
+-- debug
+x_out <= x_sig;
+y_out <= y_sig;
+z_out <= z_sig;
+i_out <= lut_out;
 end architecture Behavior;
