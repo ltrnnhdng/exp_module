@@ -63,20 +63,20 @@ begin
     --==== Stimulus process ====--
     stim_proc : process
     begin
-        -- Giai ?o?n 1: reset to‡n h? th?ng
+        -- Giai ?o?n 1: reset to√†n h? th?ng
         rst_tb <= '1';
         wait for 20 ns;
         rst_tb <= '0';
         wait for 20 ns;
 
-        -- Giai ?o?n 2: n?p d? li?u ??u v‡o
-        data_in_tb <= x"1111";  -- vÌ d?: input = 10
+        -- Giai ?o?n 2: n?p d? li?u ??u v√†o
+        data_in_tb <= x"1111";  -- v√≠ d?: input = 10
         wait for 10 ns;
 
-        -- Giai ?o?n 3: ph·t xung start
+        -- Giai ?o?n 3: ph√°t xung start
         start_tb <= '1';
         
-        wait for 1000 ns;  -- ch? qu· trÏnh x? l˝
+        wait for 1000 ns;  -- ch? qu√° tr√¨nh x? l√Ω
 
         -- Giai ?o?n 4: ??i d? li?u, ch?y l?i
         data_in_tb <= x"0005";
@@ -86,7 +86,7 @@ begin
         start_tb <= '0';
         wait for 1000 ns;
 
-        -- K?t th˙c mÙ ph?ng
+        -- K?t th√∫c m√¥ ph?ng
         wait;
     end process;
 
