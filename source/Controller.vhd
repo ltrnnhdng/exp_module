@@ -121,7 +121,7 @@ begin
                 end if;
 
             when S5 | S6 =>
-                next_state <= S7;  -- true is S7
+                next_state <= S3;  
                 
             when S7 =>
                 next_state <= S3;
@@ -147,30 +147,6 @@ begin
 
     --------------------------------------------------------------------
     -- Logic ?i?u khi?n output
---    --------------------------------------------------------------------
---    reset_ctrl_int  <= '1' when (state = S1) else '0';
---    z_ld_int        <= '1' when (state = S2 or state = S7) else '0';
-    
---    z_sel_int       <= '0' when (state = S2) else 
---                       '1' when (state = S7) else 
---                       '0';
-                       
---    op_sel_int      <= '0' when (state = S5) else 
---                       '1' when (state = S6) else 
---                       '0';
-                       
---    z_op_sel_int    <= '1' when (state = S5) else 
---                       '0' when (state = S6) else 
---                       '0';
-
---    x_ld_int        <= '1' when (state = S7) else '0';
---    y_ld_int        <= '1' when (state = S7) else '0';
---    i_ld_int        <= '1' when (state = S7) else '0';
-
---    out_ld_int      <= '1' when (state = S8) else '0';
---    done_int        <= '1' when (state = S9) else '0';
-
-    --------------------------------------------------------------------
     reset_ctrl_int  <= '1' when (state = S1) else '0';
     z_ld_int        <= '1' when (state = S2 or state = S5 or state = S6) else '0';
     
