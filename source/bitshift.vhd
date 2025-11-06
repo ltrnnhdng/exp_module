@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity bitshift is
   Port ( 
     data     : in  std_logic_vector(15 downto 0);
-    shift_i  : in  std_logic_vector(15 downto 0);   -- chỉ cần 4 bit vì tối đa 16 vị trí
+    shift_i  : in  std_logic_vector(15 downto 0);   
     data_out : out std_logic_vector(15 downto 0)
   );
 end bitshift;
