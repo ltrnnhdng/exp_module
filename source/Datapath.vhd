@@ -1,9 +1,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;  -- dÃ¹ng cho phÃ©p toÃ¡n s? h?c
+use ieee.numeric_std.all;  -- dùng cho phép toán s? h?c
 use ieee.STD_LOGIC_UNSIGNED;
 
--- Khai bÃ¡o entity (giao ti?p)
+-- Khai báo entity (giao ti?p)
 entity datapath is
     port (
        rst, clk: in std_logic;
@@ -21,15 +21,12 @@ entity datapath is
        i_gt_N, z_ge_0: out std_logic;
        
        -- data out
-       out_data: out std_logic_vector(15 downto 0);
-       
-       -- debug-------------------
-       x_out, y_out, z_out, i_out: out std_logic_vector(15 downto 0)
+       out_data: out std_logic_vector(15 downto 0)
        
     );
 end entity datapath;
 
--- Ki?n trÃºc bÃªn trong (mÃ´ t? ho?t ??ng)
+-- Ki?n trúc bên trong (mô t? ho?t ??ng)
 architecture Behavior of datapath is
 
     -- component declearations 
@@ -177,9 +174,4 @@ out_ff: entity work.flipflop
     generic map (reset_value => x"0000")
     port map (clk => clk, rst => rst, ena => out_ld, d => out_adder_sig, q => out_data);
 
--- debug
-x_out <= x_sig;
-y_out <= y_sig;
-z_out <= z_sig;
-i_out <= lut_out;
 end architecture Behavior;

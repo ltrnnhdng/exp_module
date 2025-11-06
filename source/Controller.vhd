@@ -10,7 +10,7 @@ entity exp_controller is
         z_ge_0      : in  std_logic;   -- t? datapath
         i_gt_N      : in  std_logic;   -- t? datapath
 
-        -- c√°c t√≠n hi?u ?i?u khi?n ra datapath
+        -- c·c tÌn hi?u ?i?u khi?n ra datapath
         x_ld        : out std_logic;
         y_ld        : out std_logic;
         z_ld        : out std_logic;
@@ -24,7 +24,7 @@ entity exp_controller is
         -- debug FSM
         state_reg   : out std_logic_vector(3 downto 0);
 
-        -- t√≠n hi?u reset n?i b? FSM (quan s√°t)
+        -- tÌn hi?u reset n?i b? FSM (quan s·t)
         reset_ctrl  : out std_logic
     );
 end entity;
@@ -32,7 +32,7 @@ end entity;
 architecture fsm of exp_controller is
 
     type state_type is (
-        S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11
+        S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10
     );
     signal state, next_state : state_type;
 
@@ -44,7 +44,7 @@ architecture fsm of exp_controller is
 
 begin
     --------------------------------------------------------------------
-    -- G√°n ra ngo√†i
+    -- G·n ra ngo‡i
     --------------------------------------------------------------------
     x_ld     <= x_ld_int;
     y_ld     <= y_ld_int;
@@ -58,7 +58,7 @@ begin
     reset_ctrl <= reset_ctrl_int;
 
     --------------------------------------------------------------------
-    -- M√£ h√≥a tr?ng th√°i ?? debug
+    -- M„ hÛa tr?ng th·i ?? debug
     --------------------------------------------------------------------
     with state select
         state_reg <= "0000" when S0,
@@ -72,11 +72,10 @@ begin
                      "1000" when S8,
                      "1001" when S9,
                      "1010" when S10,
-                     "1011" when S11,
                      "1111" when others;
 
     --------------------------------------------------------------------
-    -- Thanh ghi tr?ng th√°i
+    -- Thanh ghi tr?ng th·i
     --------------------------------------------------------------------
     process(clk, reset_cpu)
     begin
@@ -88,7 +87,7 @@ begin
     end process;
 
     --------------------------------------------------------------------
-    -- Logic chuy?n tr?ng th√°i
+    -- Logic chuy?n tr?ng th·i
     --------------------------------------------------------------------
     process(state, start, z_ge_0, i_gt_N)
     begin
@@ -110,7 +109,7 @@ begin
                 if i_gt_N = '0' then
                     next_state <= S4;
                 else
-                    next_state <= S8;
+                    next_state <= S7;
                 end if;
 
             when S4 =>
@@ -124,19 +123,16 @@ begin
                 next_state <= S3;  
                 
             when S7 =>
-                next_state <= S3;
+                next_state <= S8;
 
             when S8 =>
                 next_state <= S9;
 
             when S9 =>
-                next_state <= S10;
-
-            when S10 =>
                 if start = '0' then 
-                    next_state <= S11;
+                    next_state <= S10;
                 end if;
-            when S11 =>
+            when S10 =>
                 next_state <= S0;
 
             when others =>
@@ -147,6 +143,7 @@ begin
 
     --------------------------------------------------------------------
     -- Logic ?i?u khi?n output
+    --------------------------------------------------------------------
     reset_ctrl_int  <= '1' when (state = S1) else '0';
     z_ld_int        <= '1' when (state = S2 or state = S5 or state = S6) else '0';
     
@@ -166,7 +163,9 @@ begin
     y_ld_int        <= '1' when (state = S5 or state = S6) else '0';
     i_ld_int        <= '1' when (state = S5 or state = S6) else '0';
 
-    out_ld_int      <= '1' when (state = S8) else '0';
-    done_int        <= '1' when (state = S9) else '0';
+    out_ld_int      <= '1' when (state = S7) else '0';
+    done_int        <= '1' when (state = S8 or state = S9) else 
+                       '0' when (state = S10) else
+                       '0' ;
 
 end architecture;
