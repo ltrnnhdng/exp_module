@@ -2,8 +2,8 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 use IEEE.MATH_REAL.ALL;
-use std.textio.all;      -- 🟢 Thư viện in text
-use ieee.std_logic_textio.all;  -- 🟢 Dùng khi muốn in std_logic_vector
+use std.textio.all;      --  Thư viện in text
+use ieee.std_logic_textio.all;  --  Dùng khi muốn in std_logic_vector
 
 entity tb_ultimate_top_module is
 end tb_ultimate_top_module;
