@@ -28,8 +28,7 @@ begin
 
   -- Dịch thêm 8 bit (nếu shift_i(3) = '1')
   s3 <= s2 when shift_i(3) = '0' else 
-        (s2(15) & s2(15) & s2(15) & s2(15) & s2(15) & s2(15) & s2(15) & s2(15) &
-         s2(15) & s2(14 downto 8));
+        (s2(15) & s2(15) & s2(15) & s2(15) & s2(15) & s2(15) & s2(15) & s2(15) & s2(15) & s2(14 downto 8));
 
   -- Kết quả cuối
   data_out <= s3;
