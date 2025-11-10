@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity mux is
     Port ( 
-        a, b: in std_logic_vector(15 downto 0);
+        a, b: in std_logic_vector(31 downto 0);
         sel: in std_logic;
         c: out std_logic_vector
     );

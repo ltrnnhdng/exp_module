@@ -2,16 +2,16 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity flipflop is
-generic(reset_value : std_logic_vector (15 downto 0));
+generic(reset_value : std_logic_vector (31 downto 0));
 port(
     clk, rst, ena: in std_logic;
-    d : in std_logic_vector (15 downto 0);
-    q : out std_logic_vector (15 downto 0)
+    d : in std_logic_vector (31 downto 0);
+    q : out std_logic_vector (31 downto 0)
 );
 end flipflop;
 
 architecture behavioral of flipflop is
-signal q_reg:  std_logic_vector(15 downto 0);
+signal q_reg:  std_logic_vector(31 downto 0);
 begin
     process(clk)
     begin

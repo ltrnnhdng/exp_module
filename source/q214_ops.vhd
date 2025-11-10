@@ -5,8 +5,8 @@ use ieee.numeric_std.all;
 
 entity q214_add is
 Port ( 
-    ain, bin: in std_logic_vector (15 downto 0);
-    c: out std_logic_vector (15 downto 0)
+    ain, bin: in std_logic_vector (31 downto 0);
+    c: out std_logic_vector (31 downto 0)
 );
 end q214_add;
 
@@ -25,8 +25,8 @@ use ieee.numeric_std.all;
 
 entity q214_sub is
 Port ( 
-    ain, bin: in std_logic_vector (15 downto 0);
-    c: out std_logic_vector (15 downto 0)
+    ain, bin: in std_logic_vector (31 downto 0);
+    c: out std_logic_vector (31 downto 0)
 );
 end q214_sub;
 
