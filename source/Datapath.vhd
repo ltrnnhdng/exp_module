@@ -1,9 +1,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;  -- d�ng cho ph�p to�n s? h?c
+use ieee.numeric_std.all;  -- dï¿½ng cho phï¿½p toï¿½n s? h?c
 use ieee.STD_LOGIC_UNSIGNED;
 
--- Khai b�o entity (giao ti?p)
+-- Khai bï¿½o entity (giao ti?p)
 entity datapath is
     port (
        rst, clk: in std_logic;
@@ -26,7 +26,7 @@ entity datapath is
     );
 end entity datapath;
 
--- Ki?n tr�c b�n trong (m� t? ho?t ??ng)
+-- Ki?n trï¿½c bï¿½n trong (mï¿½ t? ho?t ??ng)
 architecture Behavior of datapath is
 
     -- component declearations 
@@ -91,10 +91,10 @@ architecture Behavior of datapath is
     constant one_1bit : std_logic := '1';
     
 -- =============================================================
---  LUT (atanh(2^-i)) dạng Q2.30 fixed-point (32-bit)
+--  LUT (atanh(2^-i)) dáº¡ng Q2.30 fixed-point (32-bit)
 -- =============================================================
 -- =============================================================
---  LUT (atanh(2^-i)) dạng Q2.30 fixed-point
+--  LUT (atanh(2^-i)) dáº¡ng Q2.30 fixed-point
 -- =============================================================
 type lut_array is array (0 to 20) of std_logic_vector(31 downto 0);
 constant LUT : lut_array := (
@@ -134,7 +134,7 @@ i_comp: comparator port map (clk => clk, rst => rst, a => i_sig, e_16_flag => i_
 
 -- x,y,z ffs
 x_ff : entity work.flipflop  
-    generic map (reset_value => x"4D2C61D3")  --        1/k = 1.2051363583 -> 0b0100110100100001 -> 0x4D21
+    generic map (reset_value => x"4D20F43F")  --        1/k = 1.2051363583 -> 0b0100110100100001 -> 0x4D21
     port map (clk => clk, rst => rst, ena => x_ld, d => x_next, q => x_sig);
 
 y_ff : entity work.flipflop  
