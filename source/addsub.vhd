@@ -6,8 +6,8 @@ use ieee.numeric_std.all;
 entity addsub is
 Port ( 
     op_sel :in std_logic;
-    a,b : in std_logic_vector (15 downto 0);
-    c : out std_logic_vector (15 downto 0)
+    a,b : in std_logic_vector (31 downto 0);
+    c : out std_logic_vector (31 downto 0)
 );
 end addsub;
 
@@ -17,20 +17,20 @@ architecture Behavioral of addsub is
     -- adder and subtractor declarations
     component q214_add -- adder
     port (
-        signal ain, bin: in std_logic_vector (15 downto 0);
-        signal c: out std_logic_vector (15 downto 0)
+        signal ain, bin: in std_logic_vector (31 downto 0);
+        signal c: out std_logic_vector (31 downto 0)
     );
     end component;
     
     component q214_sub -- subtractor
     port (
-        signal ain, bin: in std_logic_vector (15 downto 0);
-        signal c: out std_logic_vector (15 downto 0)
+        signal ain, bin: in std_logic_vector (31 downto 0);
+        signal c: out std_logic_vector (31 downto 0)
     );
     end component;
     
     -- signal declaration
-    signal add_res, sub_res: std_logic_vector (15 downto 0);
+    signal add_res, sub_res: std_logic_vector (31 downto 0);
     
     -- start here
     BEGIN

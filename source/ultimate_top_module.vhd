@@ -7,10 +7,10 @@ entity ultimate_top_module is
     clk       : in  std_logic;
     rst       : in  std_logic;
     start     : in  std_logic;
-    data_in   : in  std_logic_vector(15 downto 0);
+    data_in   : in  std_logic_vector(31 downto 0);
     
     done      : out std_logic;
-    out_data  : out std_logic_vector(15 downto 0)
+    out_data  : out std_logic_vector(31 downto 0)
     
   );
 end ultimate_top_module;
@@ -21,7 +21,7 @@ architecture Behavioral of ultimate_top_module is
   component exp_controller is
     port (
         clk       : in  std_logic;
-        reset_cpu     : in  std_logic;
+        reset_cpu : in  std_logic;
         start     : in  std_logic;
         z_ge_0    : in  std_logic;
         i_gt_N    : in  std_logic;
@@ -53,8 +53,8 @@ architecture Behavioral of ultimate_top_module is
 
        i_gt_N, z_ge_0:                  out std_logic;  -- flags
        
-       in_val  : in  std_logic_vector(15 downto 0);     -- input data
-       out_data: out std_logic_vector(15 downto 0)      -- output data
+       in_val  : in  std_logic_vector(31 downto 0);     -- input data
+       out_data: out std_logic_vector(31 downto 0)      -- output data
 
     );
   end component;
@@ -98,7 +98,7 @@ begin
   controller_module : exp_controller
     port map(
       clk       => clk,
-      reset_cpu     => rst,
+      reset_cpu => rst,
       start     => start,
       z_ge_0    => z_ge_0_top,
       i_gt_N    => i_gt_N_top,
