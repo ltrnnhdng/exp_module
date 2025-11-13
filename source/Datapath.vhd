@@ -1,9 +1,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;  -- dï¿½ng cho phï¿½p toï¿½n s? h?c
+use ieee.numeric_std.all; 
 use ieee.STD_LOGIC_UNSIGNED;
 
--- Khai bï¿½o entity (giao ti?p)
+-- Khai b�o entity (giao ti?p)
 entity datapath is
     port (
        rst, clk: in std_logic;
@@ -26,7 +26,7 @@ entity datapath is
     );
 end entity datapath;
 
--- Ki?n trï¿½c bï¿½n trong (mï¿½ t? ho?t ??ng)
+-- Ki?n tr�c b�n trong (m� t? ho?t ??ng)
 architecture Behavior of datapath is
 
     -- component declearations 
@@ -51,7 +51,6 @@ architecture Behavior of datapath is
     
     component bitshift 
         port(
-            clk, rst: in std_logic;
             data: in std_logic_vector (31 downto 0);
             shift_i: in std_logic_vector (31 downto 0);
             data_out: out std_logic_vector (31 downto 0)
@@ -91,34 +90,34 @@ architecture Behavior of datapath is
     constant one_1bit : std_logic := '1';
     
 -- =============================================================
---  LUT (atanh(2^-i)) dáº¡ng Q2.30 fixed-point (32-bit)
+--  LUT (atanh(2^-i)) dạng Q2.30 fixed-point (32-bit)
 -- =============================================================
 -- =============================================================
---  LUT (atanh(2^-i)) dáº¡ng Q2.30 fixed-point
+--  LUT (atanh(2^-i)) dạng Q2.30 fixed-point
 -- =============================================================
 type lut_array is array (0 to 20) of std_logic_vector(31 downto 0);
 constant LUT : lut_array := (
-    0 =>  x"FFFFFFFF",
-    1  => x"2327D4F5", -- i=0
-    2  => x"1058AEFB", -- i=1
-    3  => x"080AC48E", -- i=2
-    4  => x"04015623", -- i=3
-    5  => x"02002AB1", -- i=4
-    6  => x"01000556", -- i=5
-    7  => x"008000AB", -- i=6
-    8  => x"00400015", -- i=7
-    9  => x"00200003", -- i=8
-    10 => x"00100000", -- i=9
-    11 => x"00080000", -- i=10
-    12 => x"00040000", -- i=11
-    13 => x"00020000", -- i=12
-    14 => x"00010000", -- i=13
-    15 => x"00008000", -- i=14
-    16 => x"00004000", -- i=15
-    17 => x"00002000", -- i=16
-    18 => x"00001000", -- i=17
-    19 => x"00000800", -- i=18
-    20 => x"00000400" -- i=19   
+    0  => x"FFFFFFFF", -- filler
+    1  => x"08C9F53D", -- i=0
+    2  => x"04162BBF", -- i=1
+    3  => x"0202B124", -- i=2
+    4  => x"01005589", -- i=3
+    5  => x"00800AAC", -- i=4
+    6  => x"00400155", -- i=5
+    7  => x"0020002B", -- i=6
+    8  => x"00100005", -- i=7
+    9  => x"00080001", -- i=8
+    10 => x"00040000", -- i=9
+    11 => x"00020000", -- i=10
+    12 => x"00010000", -- i=11
+    13 => x"00008000", -- i=12
+    14 => x"00004000", -- i=13
+    15 => x"00002000", -- i=14
+    16 => x"00001000", -- i=15
+    17 => x"00000800", -- i=16
+    18 => x"00000400", -- i=17
+    19 => x"00000200", -- i=18
+    20 => x"00000100"  -- i=19
 );
 -- =============================================================
 
@@ -134,7 +133,7 @@ i_comp: comparator port map (clk => clk, rst => rst, a => i_sig, e_16_flag => i_
 
 -- x,y,z ffs
 x_ff : entity work.flipflop  
-    generic map (reset_value => x"4D20F43F")  --        1/k = 1.2051363583 -> 0b0100110100100001 -> 0x4D21
+    generic map (reset_value => x"13483D0F")  --        1/k = 1.2051363583 
     port map (clk => clk, rst => rst, ena => x_ld, d => x_next, q => x_sig);
 
 y_ff : entity work.flipflop  
