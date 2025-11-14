@@ -73,7 +73,7 @@ begin
         ---------------------------------------------------------------------
 
         report "TEST: e^(-0.6)" severity NOTE;
-        data_in_tb <= x"F999999A"; -- -0.6 * 2^28 = -161061274
+        data_in_tb <= x"11000000"; --    -0.6137056
         start_tb <= '1';
         wait for clk_period;
         wait until done_tb = '1';
