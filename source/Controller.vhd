@@ -23,8 +23,6 @@ entity exp_controller is
         xin_ld      : out std_logic; 
         k_ld        : out std_logic;
         xtiny_ld    : out std_logic;
-        -- debug FSM
-        state_reg   : out std_logic_vector(3 downto 0);
 
         -- tín hi?u reset n?i b? FSM (quan sát)
         reset_ctrl  : out std_logic
@@ -43,6 +41,7 @@ architecture fsm of exp_controller is
     signal xin_ld_int, k_ld_int, xtiny_ld_int: std_logic := '0';
     signal reset_ctrl_int : std_logic := '1';
     signal start_dly      : std_logic := '0';
+    
 
 begin
     --------------------------------------------------------------------
@@ -62,25 +61,6 @@ begin
     xin_ld    <= xin_ld_int; 
     k_ld      <= k_ld_int;
     xtiny_ld  <= xtiny_ld_int;
-
-    --------------------------------------------------------------------
-    -- Mã hóa tr?ng thái ?? debug
-    --------------------------------------------------------------------
-    with state select
-        state_reg <= "0000" when S0,
-                     "0001" when S1,
-                     "0010" when S2,
-                     "0011" when S3,
-                     "0100" when S4,
-                     "0101" when S5,
-                     "0110" when S6,
-                     "0111" when S7,
-                     "1000" when S8,
-                     "1001" when S9,
-                     "1010" when S10,
-                     "1011" when S11,
-                     "1100" when S12,
-                     "1111" when others;
 
     --------------------------------------------------------------------
     -- Thanh ghi tr?ng thái

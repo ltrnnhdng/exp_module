@@ -40,8 +40,6 @@ architecture Behavioral of ultimate_top_module is
         k_ld        : out std_logic;
         xtiny_ld    : out std_logic;
         
-        -- debug FSM
-        state_reg : out std_logic_vector(3 downto 0);
         reset_ctrl  : out std_logic
     );
   end component;
@@ -124,7 +122,6 @@ begin
       z_sel     => z_sel_top,
 
       done      => done_top,
-      state_reg => state_debug,
       reset_ctrl=> reset_controller
     );
 
