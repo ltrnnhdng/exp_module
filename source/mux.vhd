@@ -5,7 +5,7 @@ entity mux is
     Port ( 
         a, b: in std_logic_vector(31 downto 0);
         sel: in std_logic;
-        c: out std_logic_vector(31 downto 0)
+        c: out std_logic_vector
     );
 end mux;
 

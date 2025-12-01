@@ -5,7 +5,8 @@ use IEEE.NUMERIC_STD.ALL;
 entity bitshift is
   Port (
     data     : in  std_logic_vector(31 downto 0);
-    shift_i  : in  std_logic_vector(31 downto 0);  -- ch? c?n 5 bit
+    shift_i  : in  std_logic_vector(31 downto 0);   -- ch? c?n 5 bit
+    dir      : in  std_logic;                      -- 0 = d?ch trái, 1 = d?ch ph?i
     data_out : out std_logic_vector(31 downto 0)
   );
 end bitshift;
@@ -16,28 +17,32 @@ begin
 
   -- Shift 1 bit
   s0 <= data when shift_i(0) = '0' else
-        data(31) & data(31 downto 1);
+        (data(30 downto 0) & '0') when dir='0' else   -- d?ch trái
+        (data(31) & data(31 downto 1));               -- d?ch ph?i
 
   -- Shift 2 bit
   s1 <= s0 when shift_i(1) = '0' else
-        (s0(31) & s0(31)) & s0(31 downto 2);
+        (s0(29 downto 0) & "00") when dir='0' else
+        (s0(31) & s0(31) & s0(31 downto 2));
 
   -- Shift 4 bit
   s2 <= s1 when shift_i(2) = '0' else
-        (s1(31) & s1(31) & s1(31) & s1(31)) & s1(31 downto 4);
+        (s1(27 downto 0) & x"0") when dir='0' else
+        (s1(31) & s1(31) & s1(31) & s1(31) & s1(31 downto 4));
 
   -- Shift 8 bit
   s3 <= s2 when shift_i(3) = '0' else
+        (s2(23 downto 0) & x"00") when dir='0' else
         (s2(31) & s2(31) & s2(31) & s2(31) &
          s2(31) & s2(31) & s2(31) & s2(31)) & s2(31 downto 8);
 
   -- Shift 16 bit
   s4 <= s3 when shift_i(4) = '0' else
-      (s3(31) & s3(31) & s3(31) & s3(31) &
-       s3(31) & s3(31) & s3(31) & s3(31) &
-       s3(31) & s3(31) & s3(31) & s3(31) &
-       s3(31) & s3(31) & s3(31) & s3(31)) & s3(31 downto 16);
-
+        (s3(15 downto 0) & x"0000") when dir='0' else
+        (s3(31) & s3(31) & s3(31) & s3(31) &
+         s3(31) & s3(31) & s3(31) & s3(31) &
+         s3(31) & s3(31) & s3(31) & s3(31) &
+         s3(31) & s3(31) & s3(31) & s3(31)) & s3(31 downto 16);
 
   data_out <= s4;
 

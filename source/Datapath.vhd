@@ -9,7 +9,7 @@ entity datapath is
        rst, clk: in std_logic;
         
        -- ff enable signals
-       i_ld, x_ld, y_ld, z_ld, out_ld : in std_logic;
+       i_ld, x_ld, y_ld, z_ld, out_ld,xin_ld, k_ld, xtiny_ld  : in std_logic;
        
        -- input value
        in_val : in std_logic_vector(31 downto 0);
@@ -26,7 +26,7 @@ entity datapath is
     );
 end entity datapath;
 
--- Ki?n tr�c b�n trong (m� t? ho?t ??ng)
+
 architecture Behavior of datapath is
 
     -- component declearations 
@@ -52,7 +52,8 @@ architecture Behavior of datapath is
     component bitshift 
         port(
             data: in std_logic_vector (31 downto 0);
-            shift_i: in std_logic_vector (31 downto 0);
+            shift_i: in std_logic_vector (7 downto 0);
+            dir      : in  std_logic;
             data_out: out std_logic_vector (31 downto 0)
         );
     end component;
@@ -73,8 +74,17 @@ architecture Behavior of datapath is
         c: out std_logic_vector
     );
     end component;
+    
+    
+    component xtinyk_sel  
+    port( 
+        x_in : in std_logic_vector(31 downto 0); -- Q4.28
+        k_out : out std_logic_vector(31 downto 0); -- signed 4-bit 
+        x_tiny : out std_logic_vector(31 downto 0) -- Q4.28
+    ); 
+    end component;
 
-    -- signals
+    -- signals 
     -- 
     signal i_sig: std_logic_vector(31 downto 0) := x"00000001";
     signal i_after_add: std_logic_vector(31 downto 0) := x"00000000";
@@ -82,7 +92,13 @@ architecture Behavior of datapath is
     signal x_sig, x_after_shift, x_next: std_logic_vector(31 downto 0) := x"00000000";
     signal y_sig, y_after_shift, y_next: std_logic_vector(31 downto 0) := x"00000000";
     signal lut_out : std_logic_vector(31 downto 0) := x"00000000";
-    signal out_adder_sig: std_logic_vector(31 downto 0) := x"00000000";
+    signal out_adder_sig, out_shifter_sig: std_logic_vector(31 downto 0) := x"00000000";
+    
+    --- xin, k, xtiny
+    signal xin_sig, k_sig, xtiny_sig, kln2: std_logic_vector(31 downto 0) := x"00000000";
+    
+    signal xtinyff_sig, k_out: std_logic_vector(31 downto 0) := x"00000000";
+    
     --
     
     
@@ -126,7 +142,7 @@ BEGIN
 i_ff : entity work.flipflop  
     generic map (reset_value => x"00000001") 
     port map (clk => clk, rst => rst, ena => i_ld, d => i_after_add, q => i_sig);
-i_add_1: addsub port map (op_sel => one_1bit, a => i_sig, b=>one, c => i_after_add);
+i_add_1: addsub port map (op_sel => '1', a => i_sig, b=>one, c => i_after_add);
 i_comp: comparator port map (clk => clk, rst => rst, a => i_sig, e_16_flag => i_gt_N);
 
 
@@ -144,12 +160,25 @@ z_ff : entity work.flipflop
     generic map (reset_value => x"00000000")
     port map (clk => clk, rst => rst, ena => z_ld, d => z_next, q => z_sig);
 
+xin_ff : entity work.flipflop  
+    generic map (reset_value => x"00000000")
+    port map (clk => clk, rst => rst, ena => xin_ld, d => in_val, q => xin_sig);
+    
+k_ff : entity work.flipflop  
+    generic map (reset_value => x"00000000")
+    port map (clk => clk, rst => rst, ena => k_ld, d => k_out, q => k_sig);
+    
+xtiny_ff : entity work.flipflop  
+    generic map (reset_value => x"00000000")
+    port map (clk => clk, rst => rst, ena => xtiny_ld, d => xtiny_sig, q => xtinyff_sig);
+    
+    
 -- shifters
 x_shift : entity work.bitshift
-    port map (data => y_sig, shift_i => i_sig, data_out => y_after_shift);
+    port map (data => y_sig, shift_i => i_sig, dir => '1', data_out => y_after_shift);
     
 y_shift : entity work.bitshift
-    port map (data => x_sig ,shift_i => i_sig, data_out => x_after_shift);
+    port map (data => x_sig ,shift_i => i_sig, dir => '1', data_out => x_after_shift);
     
     
     
@@ -169,14 +198,20 @@ lut_out <= LUT(to_integer(unsigned(i_sig(31 downto 0))) mod LUT'length);
 z_addsub:entity work.addsub
     port map(op_sel => z_op_sel, a => z_sig, b => lut_out, c => z_after_add);
     
-z_mux: mux port map (sel => z_sel, a => in_val, b => z_after_add, c => z_next);
+z_mux: mux port map (sel => z_sel, a => xtinyff_sig, b => z_after_add, c => z_next);
 
+-- input handler
+xtinyk_sel1: xtinyk_sel port map(x_in => xin_sig, k_out=>k_out, x_tiny=>kln2);
+xtiny_addsub : entity work.addsub
+    port map(op_sel => '0', a => xin_sig, b => kln2, c => xtiny_sig);
 
 -- data out
 out_addsub : entity work.addsub
-    port map(op_sel => one_1bit, a => x_sig, b => y_sig, c => out_adder_sig);
+    port map(op_sel => '1', a => x_sig, b => y_sig, c => out_adder_sig);
+out_shift : entity work.bitshift
+    port map (data => out_adder_sig ,shift_i => k_sig, dir => k_sig(31), data_out => out_shifter_sig);
 out_ff: entity work.flipflop  
     generic map (reset_value => x"00000000")
-    port map (clk => clk, rst => rst, ena => out_ld, d => out_adder_sig, q => out_data);
+    port map (clk => clk, rst => rst, ena => out_ld, d => out_shifter_sig, q => out_data);
 
 end architecture Behavior;

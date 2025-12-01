@@ -20,27 +20,32 @@ entity exp_controller is
         z_op_sel    : out std_logic;
         z_sel       : out std_logic;
         done        : out std_logic;
-
-        -- debug FSM
-        state_reg   : out std_logic_vector(3 downto 0);
+        xin_ld      : out std_logic; 
+        k_ld        : out std_logic;
+        xtiny_ld    : out std_logic;
 
         -- tín hi?u reset n?i b? FSM (quan sát)
         reset_ctrl  : out std_logic
+        
+        -- debug FSM
+        --state_reg   : out std_logic_vector(3 downto 0)
+        
     );
 end entity;
 
 architecture fsm of exp_controller is
 
     type state_type is (
-        S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10
+        S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12
     );
     signal state, next_state : state_type;
 
     signal x_ld_int, y_ld_int, z_ld_int, i_ld_int, out_ld_int : std_logic := '0';
     signal op_sel_int, z_op_sel_int, z_sel_int, done_int : std_logic := '0';
-
+    signal xin_ld_int, k_ld_int, xtiny_ld_int: std_logic := '0';
     signal reset_ctrl_int : std_logic := '1';
     signal start_dly      : std_logic := '0';
+    
 
 begin
     --------------------------------------------------------------------
@@ -56,24 +61,30 @@ begin
     z_sel    <= z_sel_int;
     done     <= done_int;
     reset_ctrl <= reset_ctrl_int;
+    
+    xin_ld    <= xin_ld_int; 
+    k_ld      <= k_ld_int;
+    xtiny_ld  <= xtiny_ld_int;
+
 
     --------------------------------------------------------------------
     -- Mã hóa tr?ng thái ?? debug
     --------------------------------------------------------------------
-    with state select
-        state_reg <= "0000" when S0,
-                     "0001" when S1,
-                     "0010" when S2,
-                     "0011" when S3,
-                     "0100" when S4,
-                     "0101" when S5,
-                     "0110" when S6,
-                     "0111" when S7,
-                     "1000" when S8,
-                     "1001" when S9,
-                     "1010" when S10,
-                     "1111" when others;
-
+--    with state select
+--        state_reg <= "0000" when S0,
+--                     "0001" when S1,
+--                     "0010" when S2,
+--                     "0011" when S3,
+--                     "0100" when S4,
+--                     "0101" when S5,
+--                     "0110" when S6,
+--                     "0111" when S7,
+--                     "1000" when S8,
+--                     "1001" when S9,
+--                     "1010" when S10,
+--                     "1011" when S11,
+--                     "1100" when S12,
+--                     "1111" when others;
     --------------------------------------------------------------------
     -- Thanh ghi tr?ng thái
     --------------------------------------------------------------------
@@ -106,33 +117,39 @@ begin
                 next_state <= S3;
                 
             when S3 =>
-                if i_gt_N = '0' then
-                    next_state <= S4;
-                else
-                    next_state <= S7;
-                end if;
-
-            when S4 =>
-                if z_ge_0 = '0' then
-                    next_state <= S5;
-                else
-                    next_state <= S6;
-                end if;
-
-            when S5 | S6 =>
-                next_state <= S3;  
+                next_state <= S4;
                 
-            when S7 =>
-                next_state <= S8;
-
-            when S8 =>
-                next_state <= S9;
-
-            when S9 =>
-                if start = '0' then 
-                    next_state <= S10;
+            when S4 =>
+                next_state <= S5;
+                
+            when S5 =>
+                if i_gt_N = '0' then
+                    next_state <= S6;
+                else
+                    next_state <= S9;
                 end if;
+
+            when S6 =>
+                if z_ge_0 = '0' then
+                    next_state <= S7;
+                else
+                    next_state <= S8;
+                end if;
+
+            when S7 | S8 =>
+                next_state <= S5;  
+                
+            when S9 =>
+                next_state <= S10;
+
             when S10 =>
+                next_state <= S11;
+
+            when S11 =>
+                if start = '0' then 
+                    next_state <= S12;
+                end if;
+            when S12 =>
                 next_state <= S0;
 
             when others =>
@@ -145,27 +162,32 @@ begin
     -- Logic ?i?u khi?n output
     --------------------------------------------------------------------
     reset_ctrl_int  <= '1' when (state = S1) else '0';
-    z_ld_int        <= '1' when (state = S2 or state = S5 or state = S6) else '0';
     
-    z_sel_int       <= '0' when (state = S2) else 
-                       '1' when (state = S5 or state = S6) else 
+    xin_ld_int      <= '1' when (state = S2) else '0';
+    k_ld_int        <= '1' when (state = S3) else '0';
+    xtiny_ld_int    <= '1' when (state = S3) else '0';
+    
+    z_ld_int        <= '1' when (state = S4 or state = S7 or state = S8) else '0';
+    
+    z_sel_int       <= '0' when (state = S4) else 
+                       '1' when (state = S7 or state = S8) else 
                        '0';
                        
-    op_sel_int      <= '0' when (state = S5) else 
-                       '1' when (state = S6) else 
+    op_sel_int      <= '0' when (state = S7) else 
+                       '1' when (state = S8) else 
                        '0';
                        
-    z_op_sel_int    <= '1' when (state = S5) else 
-                       '0' when (state = S6) else 
+    z_op_sel_int    <= '1' when (state = S7) else 
+                       '0' when (state = S8) else 
                        '0';
 
-    x_ld_int        <= '1' when (state = S5 or state = S6) else '0';
-    y_ld_int        <= '1' when (state = S5 or state = S6) else '0';
-    i_ld_int        <= '1' when (state = S5 or state = S6) else '0';
+    x_ld_int        <= '1' when (state = S7 or state = S8) else '0';
+    y_ld_int        <= '1' when (state = S7 or state = S8) else '0';
+    i_ld_int        <= '1' when (state = S7 or state = S8) else '0';
 
-    out_ld_int      <= '1' when (state = S7) else '0';
-    done_int        <= '1' when (state = S8 or state = S9) else 
-                       '0' when (state = S10) else
+    out_ld_int      <= '1' when (state = S9) else '0';
+    done_int        <= '1' when (state = S10 or state = S11) else 
+                       '0' when (state = S12) else
                        '0' ;
 
 end architecture;
