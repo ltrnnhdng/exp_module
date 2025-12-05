@@ -211,7 +211,7 @@ begin
 
     1minus_ld_int   <= '1' when (state = S11) else = '0';
     muxout_sel_int  <= '1' when (state = S12) else 
-                    '0' when (state = S10) else '0'
+                       '0' when (state = S10) else '0'
     
     out_ld_int      <= '1' when (state = S13) else '0';
     done_int        <= '1' when (state = S14 or state = S15) else 
