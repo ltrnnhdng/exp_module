@@ -9,16 +9,16 @@ entity datapath is
        rst, clk: in std_logic;
         
        -- ff enable signals
-       i_ld, x_ld, y_ld, z_ld, out_ld,xin_ld, k_ld, xtiny_ld  : in std_logic;
+       i_ld, x_ld, y_ld, z_ld, out_ld, xin_ld, k_ld, xtiny_ld, oneMinus_ld  : in std_logic;
        
        -- input value
        in_val : in std_logic_vector(31 downto 0);
        
        -- operation selection signals
-       xy_op_sel, z_op_sel, z_sel: in std_logic;
+       xy_op_sel, z_op_sel, z_sel, muxout_sel: in std_logic;
 
        -- flag signals
-       i_gt_N, z_ge_0: out std_logic;
+       i_gt_N, z_ge_0, inthres: out std_logic;
        
        -- data out
        out_data: out std_logic_vector(31 downto 0)
@@ -83,6 +83,14 @@ architecture Behavior of datapath is
         x_tiny : out std_logic_vector(31 downto 0) -- Q4.28
     ); 
     end component;
+    
+    
+    component ThresCompare 
+    port (
+        din  : in  std_logic_vector(31 downto 0);  -- Q4.28 input
+        dout : out std_logic                      -- 1 = in range, 0 = out
+    );
+    end component;
 
     -- signals 
     -- 
@@ -96,12 +104,14 @@ architecture Behavior of datapath is
     
     --- xin, k, xtiny
     signal xin_sig, k_sig, xtiny_sig, kln2: std_logic_vector(31 downto 0) := x"00000000";
-    
     signal xtinyff_sig, k_out: std_logic_vector(31 downto 0) := x"00000000";
     
     --
+    signal oneMinus_sig: std_logic_vector(31 downto 0) := x"00000000";
+    signal muxout_sig: std_logic_vector(31 downto 0) := x"00000000";
+    signal oneMinusAddsub_sig: std_logic_vector(31 downto 0) := x"00000000";
     
-    
+    --
     constant one : std_logic_vector (31 downto 0) := x"00000001";
     constant one_1bit : std_logic := '1';
     
@@ -147,7 +157,7 @@ i_comp: comparator port map (clk => clk, rst => rst, a => i_sig, e_16_flag => i_
 
 
 
--- x,y,z ffs
+-- ffs declarations
 x_ff : entity work.flipflop  
     generic map (reset_value => x"13483D0F")  --        1/k = 1.2051363583 
     port map (clk => clk, rst => rst, ena => x_ld, d => x_next, q => x_sig);
@@ -172,6 +182,9 @@ xtiny_ff : entity work.flipflop
     generic map (reset_value => x"00000000")
     port map (clk => clk, rst => rst, ena => xtiny_ld, d => xtiny_sig, q => xtinyff_sig);
     
+oneMinus_ff:   entity work.flipflop  
+    generic map (reset_value => x"00000000")
+    port map (clk => clk, rst => rst, ena => oneMinus_ld, d => oneMinusAddsub_sig, q => oneMinus_sig);
     
 -- shifters
 x_shift : entity work.bitshift
@@ -205,11 +218,18 @@ xtinyk_sel1: xtinyk_sel port map(x_in => xin_sig, k_out=>k_out, x_tiny=>kln2);
 xtiny_addsub : entity work.addsub
     port map(op_sel => '0', a => xin_sig, b => kln2, c => xtiny_sig);
 
+-- in thres process
+oneMinus_addsub : entity work.addsub
+    port map(op_sel => '0', a => x"10000000", b => xtinyff_sig, c => oneMinusAddsub_sig);  
+outmux: mux port map (sel => muxout_sel, a => out_adder_sig, b => oneMinus_sig, c => muxout_sig);
+thresComp: entity work.ThresCompare 
+    port map(din => xtinyff_sig, dout=> inthres);
+
 -- data out
 out_addsub : entity work.addsub
     port map(op_sel => '1', a => x_sig, b => y_sig, c => out_adder_sig);
 out_shift : entity work.bitshift
-    port map (data => out_adder_sig ,shift_i => k_sig, dir => k_sig(31), data_out => out_shifter_sig);
+    port map (data => muxout_sig ,shift_i => k_sig, dir => k_sig(31), data_out => out_shifter_sig);
 out_ff: entity work.flipflop  
     generic map (reset_value => x"00000000")
     port map (clk => clk, rst => rst, ena => out_ld, d => out_shifter_sig, q => out_data);

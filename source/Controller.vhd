@@ -9,7 +9,7 @@ entity exp_controller is
         start       : in  std_logic;   -- CPU g?i start
         z_ge_0      : in  std_logic;   -- t? datapath
         i_gt_N      : in  std_logic;   -- t? datapath
-
+        inThresh    : in std_logic;
         -- các tín hi?u ?i?u khi?n ra datapath
         x_ld        : out std_logic;
         y_ld        : out std_logic;
@@ -23,22 +23,29 @@ entity exp_controller is
         xin_ld      : out std_logic; 
         k_ld        : out std_logic;
         xtiny_ld    : out std_logic;
+        oneminus_ld   : out std_logic;
+        muxout_sel  : out std_logic;
 
         -- tín hi?u reset n?i b? FSM (quan sát)
         reset_ctrl  : out std_logic
+        
+        -- debug FSM
+        --state_reg   : out std_logic_vector(3 downto 0)
+        
     );
 end entity;
 
 architecture fsm of exp_controller is
 
     type state_type is (
-        S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12
+        S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12, S13, S14, S15, S16, S17 -- s17 la rac
     );
     signal state, next_state : state_type;
 
     signal x_ld_int, y_ld_int, z_ld_int, i_ld_int, out_ld_int : std_logic := '0';
     signal op_sel_int, z_op_sel_int, z_sel_int, done_int : std_logic := '0';
     signal xin_ld_int, k_ld_int, xtiny_ld_int: std_logic := '0';
+    signal muxout_sel_int, oneminus_ld_int: std_logic := '0';
     signal reset_ctrl_int : std_logic := '1';
     signal start_dly      : std_logic := '0';
     
@@ -62,6 +69,28 @@ begin
     k_ld      <= k_ld_int;
     xtiny_ld  <= xtiny_ld_int;
 
+    muxout_sel <= muxout_sel_int;
+    oneminus_ld <= oneminus_ld_int;
+
+
+    --------------------------------------------------------------------
+    -- Mã hóa tr?ng thái ?? debug
+    --------------------------------------------------------------------
+--    with state select
+--        state_reg <= "0000" when S0,
+--                     "0001" when S1,
+--                     "0010" when S2,
+--                     "0011" when S3,
+--                     "0100" when S4,
+--                     "0101" when S5,
+--                     "0110" when S6,
+--                     "0111" when S7,
+--                     "1000" when S8,
+--                     "1001" when S9,
+--                     "1010" when S10,
+--                     "1011" when S11,
+--                     "1100" when S12,
+--                     "1111" when others;
     --------------------------------------------------------------------
     -- Thanh ghi tr?ng thái
     --------------------------------------------------------------------
@@ -93,40 +122,61 @@ begin
             when S2 =>
                 next_state <= S3;
                 
+--            when S3 =>
+--                next_state <= S4;
+            --------    -------
             when S3 =>
+                next_state <= S17;
+            when S17 =>
                 next_state <= S4;
-                
+            ---------    -------
             when S4 =>
-                next_state <= S5;
+                if inThresh = '0' then
+                    next_state <= S5;
+                else
+                    next_state <= S11;
+                end if;
                 
             when S5 =>
+                next_state <= S6;
+                
+            when S6 =>
                 if i_gt_N = '0' then
-                    next_state <= S6;
+                    next_state <= S7;
+                else
+                    next_state <= S10;
+                end if;
+
+            when S7 =>
+                if z_ge_0 = '0' then
+                    next_state <= S8;
                 else
                     next_state <= S9;
                 end if;
 
-            when S6 =>
-                if z_ge_0 = '0' then
-                    next_state <= S7;
-                else
-                    next_state <= S8;
-                end if;
-
-            when S7 | S8 =>
-                next_state <= S5;  
+            when S8 | S9 =>
+                next_state <= S6;  
                 
-            when S9 =>
-                next_state <= S10;
-
             when S10 =>
-                next_state <= S11;
+                next_state <= S13;
 
             when S11 =>
+                next_state <= S12;
+
+            when S12 => 
+                next_state <= S13;
+
+            when S13 =>
+                next_state <= S14;
+            
+            when S14 => 
+                next_state <= S15;
+                
+            when S15 =>
                 if start = '0' then 
-                    next_state <= S12;
+                    next_state <= S16;
                 end if;
-            when S12 =>
+            when S16 =>
                 next_state <= S0;
 
             when others =>
@@ -144,27 +194,31 @@ begin
     k_ld_int        <= '1' when (state = S3) else '0';
     xtiny_ld_int    <= '1' when (state = S3) else '0';
     
-    z_ld_int        <= '1' when (state = S4 or state = S7 or state = S8) else '0';
+    z_ld_int        <= '1' when (state = S5 or state = S8 or state = S9) else '0';
     
-    z_sel_int       <= '0' when (state = S4) else 
-                       '1' when (state = S7 or state = S8) else 
+    z_sel_int       <= '0' when (state = S5) else 
+                       '1' when (state = S8 or state = S9) else 
                        '0';
                        
-    op_sel_int      <= '0' when (state = S7) else 
-                       '1' when (state = S8) else 
+    op_sel_int      <= '0' when (state = S8) else 
+                       '1' when (state = S9) else 
                        '0';
                        
-    z_op_sel_int    <= '1' when (state = S7) else 
-                       '0' when (state = S8) else 
+    z_op_sel_int    <= '1' when (state = S8) else 
+                       '0' when (state = S9) else 
                        '0';
 
-    x_ld_int        <= '1' when (state = S7 or state = S8) else '0';
-    y_ld_int        <= '1' when (state = S7 or state = S8) else '0';
-    i_ld_int        <= '1' when (state = S7 or state = S8) else '0';
+    x_ld_int        <= '1' when (state = S8 or state = S9) else '0';
+    y_ld_int        <= '1' when (state = S8 or state = S9) else '0';
+    i_ld_int        <= '1' when (state = S8 or state = S9) else '0';
 
-    out_ld_int      <= '1' when (state = S9) else '0';
-    done_int        <= '1' when (state = S10 or state = S11) else 
-                       '0' when (state = S12) else
+    oneminus_ld_int <= '1' when (state = S11) else '0';
+    muxout_sel_int  <= '1' when (state = S12) else 
+                       '0' when (state = S10) else '0';
+    
+    out_ld_int      <= '1' when (state = S12 or state = S10) else '0';
+    done_int        <= '1' when (state = S14 or state = S15) else 
+                       '0' when (state = S16) else
                        '0' ;
 
 end architecture;
