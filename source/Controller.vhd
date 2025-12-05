@@ -9,7 +9,7 @@ entity exp_controller is
         start       : in  std_logic;   -- CPU g?i start
         z_ge_0      : in  std_logic;   -- t? datapath
         i_gt_N      : in  std_logic;   -- t? datapath
-
+        inThresh    : in std_logic;
         -- các tín hi?u ?i?u khi?n ra datapath
         x_ld        : out std_logic;
         y_ld        : out std_logic;
@@ -23,8 +23,7 @@ entity exp_controller is
         xin_ld      : out std_logic; 
         k_ld        : out std_logic;
         xtiny_ld    : out std_logic;
-        inThresh    : out std_logic;
-        1minus_ld   : out std_logic;
+        oneminus_ld   : out std_logic;
         muxout_sel  : out std_logic;
 
         -- tín hi?u reset n?i b? FSM (quan sát)
@@ -46,7 +45,7 @@ architecture fsm of exp_controller is
     signal x_ld_int, y_ld_int, z_ld_int, i_ld_int, out_ld_int : std_logic := '0';
     signal op_sel_int, z_op_sel_int, z_sel_int, done_int : std_logic := '0';
     signal xin_ld_int, k_ld_int, xtiny_ld_int: std_logic := '0';
-    signal InThresh_int, muxout_sel_int, 1minus_ld_int: std_logic := '0';
+    signal muxout_sel_int, oneminus_ld_int: std_logic := '0';
     signal reset_ctrl_int : std_logic := '1';
     signal start_dly      : std_logic := '0';
     
@@ -70,9 +69,8 @@ begin
     k_ld      <= k_ld_int;
     xtiny_ld  <= xtiny_ld_int;
 
-    inThresh   <= InThresh_int;
     muxout_sel <= muxout_sel_int;
-    1minus_ld <= 1minus_ld_int;
+    oneminus_ld <= oneminus_ld_int;
 
 
     --------------------------------------------------------------------
@@ -108,7 +106,7 @@ begin
     --------------------------------------------------------------------
     -- Logic chuy?n tr?ng thái
     --------------------------------------------------------------------
-    process(state, start, z_ge_0, i_gt_N, inThresh)
+    process(state, start, z_ge_0, i_gt_N)
     begin
         next_state <= state;
 
@@ -132,8 +130,10 @@ begin
                     next_state <= S5;
                 else
                     next_state <= S11;
+                end if;
+                
             when S5 =>
-                next_state <= S6
+                next_state <= S6;
                 
             when S6 =>
                 if i_gt_N = '0' then
@@ -165,8 +165,8 @@ begin
                 next_state <= S14;
             
             when S14 => 
-                next_state <= 15;
-
+                next_state <= S15;
+                
             when S15 =>
                 if start = '0' then 
                     next_state <= S16;
@@ -188,8 +188,6 @@ begin
     xin_ld_int      <= '1' when (state = S2) else '0';
     k_ld_int        <= '1' when (state = S3) else '0';
     xtiny_ld_int    <= '1' when (state = S3) else '0';
-
-    InThresh_int    <= '1' when (state = S5) else '0';
     
     z_ld_int        <= '1' when (state = S5 or state = S8 or state = S9) else '0';
     
@@ -209,9 +207,9 @@ begin
     y_ld_int        <= '1' when (state = S8 or state = S9) else '0';
     i_ld_int        <= '1' when (state = S8 or state = S9) else '0';
 
-    1minus_ld_int   <= '1' when (state = S11) else = '0';
+    oneminus_ld_int   <= '1' when (state = S11) else '0';
     muxout_sel_int  <= '1' when (state = S12) else 
-                       '0' when (state = S10) else '0'
+                    '0' when (state = S10) else '0';
     
     out_ld_int      <= '1' when (state = S13) else '0';
     done_int        <= '1' when (state = S14 or state = S15) else 
