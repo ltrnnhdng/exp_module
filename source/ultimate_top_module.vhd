@@ -41,7 +41,7 @@ architecture Behavioral of ultimate_top_module is
         xin_ld      : out std_logic; 
         k_ld        : out std_logic;
         xtiny_ld    : out std_logic;
-        oneminus_ld   : out std_logic;
+        onePlus_ld   : out std_logic;
         muxout_sel  : out std_logic;
 
         -- tín hi?u reset n?i b? FSM (quan sát)
@@ -54,7 +54,7 @@ architecture Behavioral of ultimate_top_module is
        rst, clk: in std_logic;
         
        -- ff enable signals
-       i_ld, x_ld, y_ld, z_ld, out_ld, xin_ld, k_ld, xtiny_ld, oneMinus_ld  : in std_logic;
+       i_ld, x_ld, y_ld, z_ld, out_ld, xin_ld, k_ld, xtiny_ld, onePlus_ld  : in std_logic;
        
        -- input value
        in_val : in std_logic_vector(31 downto 0);
@@ -72,11 +72,10 @@ architecture Behavioral of ultimate_top_module is
   end component;
 
   --=== SIGNALS ===--
-  signal x_ld_top, y_ld_top, z_ld_top, i_ld_top, out_ld_top, xin_ld_top, k_ld_top, xtiny_ld_top, oneminus_ld_top : std_logic;
+  signal x_ld_top, y_ld_top, z_ld_top, i_ld_top, out_ld_top, xin_ld_top, k_ld_top, xtiny_ld_top, onePlus_ld_top : std_logic;
   signal z_ge_0_top, i_gt_N_top, inThresh_top : std_logic;
   signal xy_op_sel_top, z_op_sel_top, z_sel_top, muxout_sel_top : std_logic;
   signal done_top : std_logic;
-  signal state_debug : std_logic_vector(3 downto 0);
   signal reset_controller: std_logic;
 
 
@@ -96,7 +95,7 @@ begin
       xin_ld     => xin_ld_top, 
       k_ld       => k_ld_top, 
       xtiny_ld   => xtiny_ld_top, 
-      oneMinus_ld=> oneminus_ld_top,
+      onePlus_ld=> onePlus_ld_top,
 
       xy_op_sel  => xy_op_sel_top,
       z_op_sel   => z_op_sel_top,
@@ -130,7 +129,7 @@ begin
       xin_ld     => xin_ld_top, 
       k_ld       => k_ld_top, 
       xtiny_ld   => xtiny_ld_top, 
-      oneminus_ld=> oneminus_ld_top,
+      onePlus_ld=> onePlus_ld_top,
       muxout_sel => muxout_sel_top,
 
       op_sel    => xy_op_sel_top,
