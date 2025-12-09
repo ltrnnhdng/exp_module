@@ -136,7 +136,7 @@ begin
                 next_state <= S6;
                 
             when S6 =>
-                if i_gt_N = '0' then
+                if i_gt_N = '1' then
                     next_state <= S10;
                 else
                     next_state <= S7;
