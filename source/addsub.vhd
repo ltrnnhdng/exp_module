@@ -16,14 +16,14 @@ end addsub;
 architecture Behavioral of addsub is
 
     -- adder and subtractor declarations
-    component q214_add -- adder
+    component q428_add -- adder
     port (
         signal ain, bin: in std_logic_vector (31 downto 0);
         signal c: out std_logic_vector (31 downto 0)
     );
     end component;
     
-    component q214_sub -- subtractor
+    component q428_sub -- subtractor
     port (
         signal ain, bin: in std_logic_vector (31 downto 0);
         signal c: out std_logic_vector (31 downto 0)
@@ -35,9 +35,10 @@ architecture Behavioral of addsub is
     
     -- start here
     BEGIN
-    adder : q214_add port map (ain => a, bin => b, c => add_res);
-    subtractor: q214_sub port map (ain => a, bin => b, c => sub_res);
+    adder : q428_add port map (ain => a, bin => b, c => add_res);
+    subtractor: q428_sub port map (ain => a, bin => b, c => sub_res);
 
     c <= add_res when op_sel = '1' else sub_res;
 
 END Behavioral;
+
