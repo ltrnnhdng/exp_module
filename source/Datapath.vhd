@@ -63,7 +63,7 @@ architecture Behavior of datapath is
             rst, clk: in std_logic;
             a: in std_logic_vector (31 downto 0);
             z_flag : out std_logic;
-            e_16_flag: out std_logic
+            e_32_flag: out std_logic
         );
     end component;
     
@@ -153,7 +153,7 @@ i_ff : entity work.flipflop
     generic map (reset_value => x"00000001") 
     port map (clk => clk, rst => rst, ena => i_ld, d => i_after_add, q => i_sig);
 i_add_1: addsub port map (op_sel => '1', a => i_sig, b=>one, c => i_after_add);
-i_comp: comparator port map (clk => clk, rst => rst, a => i_sig, e_16_flag => i_gt_N);
+i_comp: comparator port map (clk => clk, rst => rst, a => i_sig, e_32_flag => i_gt_N);
 
 
 
@@ -239,3 +239,4 @@ out_ff: entity work.flipflop
     port map (clk => clk, rst => rst, ena => out_ld, d => out_shifter_sig, q => out_data);
 
 end architecture Behavior;
+
