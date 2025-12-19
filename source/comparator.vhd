@@ -7,16 +7,17 @@ port(
     
     a: in std_logic_vector (31 downto 0);
     z_flag : out std_logic;
-    e_16_flag: out std_logic
+    e_32_flag: out std_logic
 );
 end comparator;
 
 architecture behavioral of comparator is
 
-constant N : std_logic_vector (31 downto 0) := x"00000014"; -- 32 
+constant N : std_logic_vector (31 downto 0) := x"00000014"; -- 20
 
 begin
-    e_16_flag <= '1' when (a = N) else '0';
+    e_32_flag <= '1' when (a = N) else '0';
     z_flag <= not a(31);
 end behavioral;
+
 
