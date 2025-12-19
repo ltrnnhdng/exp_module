@@ -10,7 +10,7 @@ entity exp_controller is
         z_ge_0      : in  std_logic;   -- t? datapath
         i_gt_N      : in  std_logic;   -- t? datapath
         inThresh    : in std_logic;
-        -- các tín hi?u ?i?u khi?n ra datapath
+        -- cï¿½c tï¿½n hi?u ?i?u khi?n ra datapath
         x_ld        : out std_logic;
         y_ld        : out std_logic;
         z_ld        : out std_logic;
@@ -26,7 +26,7 @@ entity exp_controller is
         onePlus_ld : out std_logic;
         muxout_sel  : out std_logic;
 
-        -- tín hi?u reset n?i b? FSM (quan sát)
+        -- tï¿½n hi?u reset n?i b? FSM (quan sï¿½t)
         reset_ctrl  : out std_logic
         
         -- debug FSM
@@ -52,7 +52,7 @@ architecture fsm of exp_controller is
 
 begin
     --------------------------------------------------------------------
-    -- Gán ra ngoài
+    -- GÃ¡n ra ngoÃ i
     --------------------------------------------------------------------
     x_ld     <= x_ld_int;
     y_ld     <= y_ld_int;
@@ -74,7 +74,7 @@ begin
 
 
     --------------------------------------------------------------------
-    -- Mã hóa tr?ng thái ?? debug
+    -- MÃ£ hÃ³a tr?ng thÃ¡i ?? debug
     --------------------------------------------------------------------
 --    with state select
 --        state_reg <= "0000" when S0,
@@ -92,7 +92,7 @@ begin
 --                     "1100" when S12,
 --                     "1111" when others;
     --------------------------------------------------------------------
-    -- Thanh ghi tr?ng thái
+    -- Thanh ghi tr?ng thÃ¡i
     --------------------------------------------------------------------
     process(clk, reset_cpu)
     begin
@@ -104,7 +104,7 @@ begin
     end process;
 
     --------------------------------------------------------------------
-    -- Logic chuy?n tr?ng thái
+    -- Logic chuy?n tr?ng thÃ¡i
     --------------------------------------------------------------------
     process(state, start, z_ge_0, i_gt_N, inThresh)
     begin

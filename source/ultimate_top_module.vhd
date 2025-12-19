@@ -28,7 +28,7 @@ architecture Behavioral of ultimate_top_module is
         z_ge_0      : in  std_logic;   -- t? datapath
         i_gt_N      : in  std_logic;   -- t? datapath
         inThresh    : in std_logic;
-        -- c·c tÌn hi?u ?i?u khi?n ra datapath
+        -- c√°c t√≠n hi?u ?i?u khi?n ra datapath
         x_ld        : out std_logic;
         y_ld        : out std_logic;
         z_ld        : out std_logic;
@@ -44,8 +44,10 @@ architecture Behavioral of ultimate_top_module is
         onePlus_ld   : out std_logic;
         muxout_sel  : out std_logic;
 
-        -- tÌn hi?u reset n?i b? FSM (quan s·t)
+        -- t√≠n hi?u reset n?i b? FSM (quan s√°t)
         reset_ctrl  : out std_logic
+        -- debug FSM
+        --state_reg   : out std_logic_vector(3 downto 0)
     );
   end component;
 
